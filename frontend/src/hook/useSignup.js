@@ -29,7 +29,7 @@ function useSignup() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           fullName,
-          username,
+          username: username.toLowerCase(),
           password,
           confirmPassword,
           gender,

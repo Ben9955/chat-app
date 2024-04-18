@@ -15,7 +15,7 @@ function useLogin() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username.toLowerCase(), password }),
       });
 
       const data = await res.json();
