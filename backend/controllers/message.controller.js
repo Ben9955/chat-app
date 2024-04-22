@@ -7,15 +7,23 @@ export const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
     });
+    console.log(conversation);
 
     if (!conversation) {
       conversation = await Conversation.create({
         participants: [senderId, receiverId],
+        messages: [],
       });
     }
+
+    console.log(conversation);
 
     const newMessage = new Message({
       senderId,
@@ -23,7 +31,7 @@ export const sendMessage = async (req, res) => {
       message,
     });
 
-    if (newMessage) {
+    if (conversation && newMessage) {
       conversation.messages.push(newMessage._id);
     }
 
@@ -51,13 +59,13 @@ export const getMessages = async (req, res) => {
     }).populate("messages"); // NOT REFERENCE BUT ACTUAL MESSAGES - is gonna gives us the array with messages but not al the conversation propertyies
 
     if (!conversation) {
-      res.status(200).json([]);
+      return res.status(200).json([]);
     }
 
     const messages = conversation.messages;
     res.status(200).json(messages);
   } catch (error) {
-    console.log("Error in sendMessage controller", error.message);
+    console.log("Error in getMessages controller", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
